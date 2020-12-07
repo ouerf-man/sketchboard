@@ -19,6 +19,7 @@ import {
     faLock,
     faLockOpen,
     faInfoCircle,
+    faMicrophone
 } from "@fortawesome/free-solid-svg-icons";
 import {
     faSquare,
@@ -29,6 +30,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 
 library.add(
+    faMicrophone,
     faUndo,
     faTrash,
     faCheck,

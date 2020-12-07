@@ -11,6 +11,7 @@ const DEG_TO_RAD = Math.PI / 180.0;
 const _45_DEG_IN_RAD = 45 * DEG_TO_RAD;
 
 const whiteboard = {
+    globalFont: 'Monospace',
     canvas: null,
     ctx: null,
     drawcolor: "black",
@@ -53,6 +54,9 @@ const whiteboard = {
         backgroundGridUrl: "./images/gb_grid.png",
     },
     lastPointerSentTime: 0,
+    setGlobalFont: function (font) {
+        this.globalFont = font
+    },
     /**
      * @type Point
      */
@@ -93,6 +97,9 @@ const whiteboard = {
         _this.textContainer = $(
             '<div class="textcontainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%; cursor:text;"></div>'
         );
+        _this.audioContainer = $(
+            '<div class="audioContainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%; cursor:pointer;"></div>'
+        );
         // mouse overlay for draw callbacks
         _this.mouseOverlay = $(
             '<div id="mouseOverlay" style="cursor:none; position: absolute; left:0px; top:0; height: 100%; width: 100%;"></div>'
@@ -106,6 +113,7 @@ const whiteboard = {
             .append(_this.dropIndicator)
             .append(_this.cursorContainer)
             .append(_this.textContainer)
+            .append(_this.audioContainer)
             .append(_this.mouseOverlay);
 
         // render newly added icons
@@ -219,7 +227,26 @@ const whiteboard = {
                 });
             });
         });
+        _this.audioContainer.on("mousemove touchmove", function (e) {
+            e.preventDefault();
 
+            if (_this.imgDragActive || !$(e.target).hasClass("audioContainer")) {
+                return;
+            }
+            if (ReadOnlyService.readOnlyActive) return;
+
+            const currentPos = Point.fromEvent(e);
+
+            ThrottlingService.throttle(currentPos, () => {
+                _this.lastPointerPosition = currentPos;
+                _this.sendFunction({
+                    t: "cursor",
+                    event: "move",
+                    d: [currentPos.x, currentPos.y],
+                    username: _this.settings.username,
+                });
+            });
+        });
         _this.mouseOverlay.on("mousemove touchmove", function (e) {
             e.preventDefault();
             if (ReadOnlyService.readOnlyActive) return;
@@ -276,7 +303,7 @@ const whiteboard = {
                 if (_this.pressedKeys.shift) {
                     if (
                         (currentPos.x - _this.startCoords.x) *
-                            (currentPos.y - _this.startCoords.y) >
+                        (currentPos.y - _this.startCoords.y) >
                         0
                     ) {
                         currentPos = new Point(
@@ -326,7 +353,7 @@ const whiteboard = {
                 if (_this.pressedKeys.shift) {
                     if (
                         (currentPos.x - _this.startCoords.x) *
-                            (currentPos.y - _this.startCoords.y) >
+                        (currentPos.y - _this.startCoords.y) >
                         0
                     ) {
                         currentPos = new Point(
@@ -427,6 +454,17 @@ const whiteboard = {
                 d: [_this.drawcolor, fontsize, currentPos.x, currentPos.y, txId],
             });
             _this.addTextBox(_this.drawcolor, fontsize, currentPos.x, currentPos.y, txId, true);
+        });
+
+        _this.audioContainer.on("click", function (e) {
+            const currentPos = Point.fromEvent(e);
+            const fontsize = _this.thickness * 0.5;
+            const audioId = "audio" + +new Date();
+            _this.sendFunction({
+                t: "addAudio",
+                d: [_this.drawcolor, fontsize, currentPos.x, currentPos.y, audioId],
+            });
+            _this.addAudio(_this.drawcolor, fontsize, currentPos.x, currentPos.y, audioId, true);
         });
     },
     /**
@@ -562,12 +600,12 @@ const whiteboard = {
             if (_this.tool === "eraser" || _this.tool === "pen") {
                 _this.ownCursor = $(
                     '<div id="ownCursor" style="background:' +
-                        color +
-                        "; border:1px solid gray; position:absolute; width:" +
-                        widthHeight +
-                        "px; height:" +
-                        widthHeight +
-                        'px; border-radius:50%;"></div>'
+                    color +
+                    "; border:1px solid gray; position:absolute; width:" +
+                    widthHeight +
+                    "px; height:" +
+                    widthHeight +
+                    'px; border-radius:50%;"></div>'
                 );
                 _this.cursorContainer.append(_this.ownCursor);
             }
@@ -735,6 +773,7 @@ const whiteboard = {
         _this.canvas.height = _this.canvas.height;
         _this.imgContainer.empty();
         _this.textContainer.empty();
+        _this.audioContainer.empty()
         _this.sendFunction({ t: "clear" });
         _this.drawBuffer = [];
         _this.undoBuffer = [];
@@ -760,17 +799,17 @@ const whiteboard = {
         _this.mouseOverlay.css({ cursor: "default" });
         var imgDiv = $(
             '<div class="dragMe" style="border: 2px dashed gray; position:absolute; left:200px; top:200px; min-width:160px; min-height:100px; cursor:move;">' +
-                '<img style="width:100%; height:100%;" src="' +
-                url +
-                '">' +
-                '<div style="position:absolute; right:5px; top:3px;">' +
-                '<button draw="1" style="margin: 0px 0px; background: #03a9f4; padding: 5px; margin-top: 3px; color: white;" class="addToCanvasBtn btn btn-default">Draw to canvas</button> ' +
-                '<button draw="0" style="margin: 0px 0px; background: #03a9f4; padding: 5px; margin-top: 3px; color: white;" class="addToBackgroundBtn btn btn-default">Add to background</button> ' +
-                '<button style="margin: 0px 0px; background: #03a9f4; padding: 5px; margin-top: 3px; color: white;" class="xCanvasBtn btn btn-default">x</button>' +
-                "</div>" +
-                '<i style="position:absolute; bottom: -4px; right: 2px; font-size: 2em; color: gray; transform: rotate(-45deg);" class="fas fa-sort-down" aria-hidden="true"></i>' +
-                '<div class="rotationHandle" style="position:absolute; bottom: -30px; left: 0px; width:100%; text-align:center; cursor:ew-resize;"><i class="fa fa-undo"></i></div>' +
-                "</div>"
+            '<img style="width:100%; height:100%;" src="' +
+            url +
+            '">' +
+            '<div style="position:absolute; right:5px; top:3px;">' +
+            '<button draw="1" style="margin: 0px 0px; background: #03a9f4; padding: 5px; margin-top: 3px; color: white;" class="addToCanvasBtn btn btn-default">Draw to canvas</button> ' +
+            '<button draw="0" style="margin: 0px 0px; background: #03a9f4; padding: 5px; margin-top: 3px; color: white;" class="addToBackgroundBtn btn btn-default">Add to background</button> ' +
+            '<button style="margin: 0px 0px; background: #03a9f4; padding: 5px; margin-top: 3px; color: white;" class="xCanvasBtn btn btn-default">x</button>' +
+            "</div>" +
+            '<i style="position:absolute; bottom: -4px; right: 2px; font-size: 2em; color: gray; transform: rotate(-45deg);" class="fas fa-sort-down" aria-hidden="true"></i>' +
+            '<div class="rotationHandle" style="position:absolute; bottom: -30px; left: 0px; width:100%; text-align:center; cursor:ew-resize;"><i class="fa fa-undo"></i></div>' +
+            "</div>"
         );
         imgDiv
             .find(".xCanvasBtn")
@@ -838,7 +877,7 @@ const whiteboard = {
         imgDiv.resizable();
         var params = {
             // Callback fired on rotation start.
-            start: function (event, ui) {},
+            start: function (event, ui) { },
             // Callback fired during rotation.
             rotate: function (event, ui) {
                 //console.log(ui)
@@ -857,38 +896,38 @@ const whiteboard = {
     drawImgToBackground(url, width, height, left, top, rotationAngle) {
         this.imgContainer.append(
             '<img crossorigin="anonymous" style="width:' +
-                width +
-                "px; height:" +
-                height +
-                "px; position:absolute; top:" +
-                top +
-                "px; left:" +
-                left +
-                "px; transform: rotate(" +
-                rotationAngle +
-                'rad);" src="' +
-                url +
-                '">'
+            width +
+            "px; height:" +
+            height +
+            "px; position:absolute; top:" +
+            top +
+            "px; left:" +
+            left +
+            "px; transform: rotate(" +
+            rotationAngle +
+            'rad);" src="' +
+            url +
+            '">'
         );
     },
     addTextBox(textcolor, fontsize, left, top, txId, newLocalBox) {
         var _this = this;
         var textBox = $(
             '<div id="' +
-                txId +
-                '" class="textBox" style="font-family: Monospace; position:absolute; top:' +
-                top +
-                "px; left:" +
-                left +
-                'px;">' +
-                '<div contentEditable="true" spellcheck="false" class="textContent" style="outline: none; font-size:' +
-                fontsize +
-                "em; color:" +
-                textcolor +
-                '; min-width:50px; min-height:50px;"></div>' +
-                '<div title="remove textbox" class="removeIcon" style="position:absolute; cursor:pointer; top:-4px; right:2px;">x</div>' +
-                '<div title="move textbox" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="fas fa-expand-arrows-alt"></i></div>' +
-                "</div>"
+            txId +
+            '" class="textBox" style="font-family: ' + this.globalFont + '; position:absolute; top:' +
+            top +
+            "px; left:" +
+            left +
+            'px;">' +
+            '<div contentEditable="true" spellcheck="false" class="textContent" style="outline: none; font-size:' +
+            fontsize +
+            "em; color:" +
+            textcolor +
+            '; min-width:50px; min-height:50px;"></div>' +
+            '<div title="remove textbox" class="removeIcon" style="position:absolute; cursor:pointer; top:-4px; right:2px;">x</div>' +
+            '<div title="move textbox" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="fas fa-expand-arrows-alt"></i></div>' +
+            "</div>"
         );
         _this.latestActiveTextBoxId = txId;
         textBox.click(function (e) {
@@ -964,16 +1003,158 @@ const whiteboard = {
         // render newly added icons
         dom.i2svg();
     },
+    addAudio(color, size, left, top, audioId, newLocalBox) {
+        var device = navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+
+        var _this = this;
+        var items = []
+        var url;
+        var audioBox = $(
+            '<div id="' +
+            audioId +
+            '" class="audioBox" style="position:absolute; padding:10px;top:' +
+            top +
+            "px; left:" +
+            left +
+            'px;">' +
+
+            '<div title="remove audioBox" class="removeIcon" style="position:absolute; cursor:pointer; top:-4px; right:2px;">x</div>' +
+            '<div title="move audioBox" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="fas fa-expand-arrows-alt"></i></div>' +
+            "</div>"
+        );
+
+
+        //_this.latestActiveTextBoxId = txId;
+        /*audioBox.click(function (e) {
+            e.preventDefault();
+            _this.latestActiveTextBoxId = txId;
+            return false;
+        });*/
+        audioBox.on("mousemove touchmove", function (e) {
+
+            e.preventDefault();
+            if (_this.imgDragActive) {
+                return;
+            }
+            var audioBoxPosition = audioBox.position();
+            var currX = e.offsetX + audioBoxPosition.left;
+            var currY = e.offsetY + audioBoxPosition.top;
+            if ($(e.target).hasClass("removeIcon")) {
+                currX += audioBox.width() - 4;
+            }
+
+            const newPointerPosition = new Point(currX, currY);
+
+            ThrottlingService.throttle(newPointerPosition, () => {
+                _this.lastPointerPosition = newPointerPosition;
+                _this.sendFunction({
+                    t: "cursor",
+                    event: "move",
+                    d: [newPointerPosition.x, newPointerPosition.y],
+                    username: _this.settings.username,
+                });
+            });
+        });
+        this.audioContainer.append(audioBox);
+        this.mouseOverlay.append(audioBox);
+        audioBox.draggable({
+            handle: ".moveIcon",
+            stop: function () {
+                var audioBoxPosition = audioBox.position();
+                _this.sendFunction({
+                    t: "setAudioBoxPosition",
+                    d: [audioId, audioBoxPosition.top, audioBoxPosition.left],
+                });
+            },
+            drag: function () {
+                var audioBoxPosition = audioBox.position();
+                _this.sendFunction({
+                    t: "setAudioBoxPosition",
+                    d: [audioId, audioBoxPosition.top, audioBoxPosition.left],
+                });
+            },
+        });
+        var mainaudio = document.createElement('audio')
+        mainaudio.style.zIndex = 999999
+        mainaudio.innerHTML = '<source type="video/webm"></source>'
+        mainaudio.setAttribute('controls', 'controls')
+        $('#' + audioId).append(mainaudio)
+
+        if (newLocalBox)
+            device.then(stream => {
+                var recorder = new MediaRecorder(stream)
+                recorder.ondataavailable = e => {
+                    items.push(e.data)
+                    if (recorder.state == 'inactive') {
+                        var blob = new Blob(items, { type: 'audio/webm' })
+                        console.log(blob)
+                        var reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = function () {
+                            url = reader.result;
+                            mainaudio.innerHTML = '<source type="video/webm" src="' + url + '"></source>'
+                            _this.sendFunction({ t: "setAudioboxAudio", d: [audioId, url] });
+                        }
+                    }
+                }
+                $('.recording-modal').show()
+                $('#recButton').click(function () {
+                    if ($('#recButton').hasClass('notRec')) {
+                        recorder.start();
+                        $('#recButton').removeClass("notRec");
+                        $('#recButton').addClass("Rec");
+                    }
+                    else {
+                        $('#recButton').removeClass("Rec");
+                        $('#recButton').addClass("notRec");
+                        recorder.stop()
+                        $('.recording-modal').hide()
+                    }
+                });
+            })
+        audioBox
+            .find(".removeIcon")
+            .off("click")
+            .click(function (e) {
+                $("#" + audioId).remove();
+                _this.sendFunction({ t: "removeaudioBox", d: [audioId] });
+                e.preventDefault();
+                return false;
+            });
+        if (newLocalBox) {
+            //per https://stackoverflow.com/questions/2388164/set-focus-on-div-contenteditable-element
+            setTimeout(() => {
+                audioBox.find(".textContent").focus();
+            }, 0);
+        }
+        if (this.tool === "audio") {
+            audioBox.addClass("active");
+        }
+
+        // render newly added icons
+        dom.i2svg();
+    },
     setTextboxText(txId, text) {
         $("#" + txId)
             .find(".textContent")
             .html(decodeURIComponent(escape(atob(text)))); //Set decoded base64 as html
     },
+    setAudioboxAudio(txId, url) {
+        $("#" + txId)
+            .find("source")
+            .attr('src', url); //Set decoded base64 as html
+    },
     removeTextbox(txId) {
         $("#" + txId).remove();
     },
+    removeAudiobox(audioId) {
+        $("#" + audioId).remove();
+    },
     setTextboxPosition(txId, top, left) {
         $("#" + txId).css({ top: top + "px", left: left + "px" });
+    },
+    setAudioboxPosition(audioId, top, left) {
+        $("#" + audioId).css({ top: top + "px", left: left + "px" });
     },
     setTextboxFontSize(txId, fontSize) {
         $("#" + txId)
@@ -1077,8 +1258,13 @@ const whiteboard = {
         if (this.tool === "text") {
             $(".textBox").addClass("active");
             this.textContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
-        } else {
+        } else if (this.tool === "audio") {
+            $(".audioBox").addClass("active");
+            this.audioContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
+        }
+        else {
             $(".textBox").removeClass("active");
+            $(".audioBox").removeClass("active")
             this.mouseOverlay.appendTo($(whiteboardContainer));
         }
         this.refreshCursorAppearance();
@@ -1106,15 +1292,15 @@ const whiteboard = {
             if (width < $(window).width() || height < $(window).height()) {
                 this.backgroundGrid.append(
                     '<div style="position:absolute; left:0px; top:0px; border-right:3px dotted black; border-bottom:3px dotted black; width:' +
-                        width +
-                        "px; height:" +
-                        height +
-                        'px;"></div>'
+                    width +
+                    "px; height:" +
+                    height +
+                    'px;"></div>'
                 );
                 this.backgroundGrid.append(
                     '<div style="position:absolute; left:' +
-                        (width + 5) +
-                        'px; top:0px;">smallest screen participating</div>'
+                    (width + 5) +
+                    'px; top:0px;">smallest screen participating</div>'
                 );
             }
         }
@@ -1167,13 +1353,23 @@ const whiteboard = {
                 }
             } else if (tool === "addTextBox") {
                 _this.addTextBox(data[0], data[1], data[2], data[3], data[4]);
-            } else if (tool === "setTextboxText") {
+            } else if (tool === "addAudio") {
+                _this.addAudio(data[0], data[1], data[2], data[3], data[4]);
+            }
+            else if (tool === "setTextboxText") {
                 _this.setTextboxText(data[0], data[1]);
+            } else if (tool === "setAudioboxAudio") {
+                _this.setAudioboxAudio(data[0], data[1]);
             } else if (tool === "removeTextbox") {
                 _this.removeTextbox(data[0]);
+            } else if (tool === "removeAudiobox") {
+                _this.removeAudiobox(data[0]);
             } else if (tool === "setTextboxPosition") {
                 _this.setTextboxPosition(data[0], data[1], data[2]);
-            } else if (tool === "setTextboxFontSize") {
+            } else if (tool === "setAudioboxPosition") {
+                _this.setAudioboxPosition(data[0], data[1], data[2]);
+            }
+            else if (tool === "setTextboxFontSize") {
                 _this.setTextboxFontSize(data[0], data[1]);
             } else if (tool === "setTextboxFontColor") {
                 _this.setTextboxFontColor(data[0], data[1]);
@@ -1193,15 +1389,15 @@ const whiteboard = {
                     } else {
                         _this.cursorContainer.append(
                             '<div style="font-size:0.8em; padding-left:2px; padding-right:2px; background:gray; color:white; border-radius:3px; position:absolute; left:' +
-                                data[0] +
-                                "px; top:" +
-                                (data[1] - 151) +
-                                'px;" class="userbadge ' +
-                                content["username"] +
-                                '">' +
-                                '<div style="width:4px; height:4px; background:gray; position:absolute; top:13px; left:-2px; border-radius:50%;"></div>' +
-                                decodeURIComponent(atob(content["username"])) +
-                                "</div>"
+                            data[0] +
+                            "px; top:" +
+                            (data[1] - 151) +
+                            'px;" class="userbadge ' +
+                            content["username"] +
+                            '">' +
+                            '<div style="width:4px; height:4px; background:gray; position:absolute; top:13px; left:-2px; border-radius:50%;"></div>' +
+                            decodeURIComponent(atob(content["username"])) +
+                            "</div>"
                         );
                     }
                 } else {
@@ -1226,7 +1422,9 @@ const whiteboard = {
                 "recSelect",
                 "eraseRec",
                 "addTextBox",
+                "addAudio",
                 "setTextboxText",
+                "setAudioboxAudio",
                 "removeTextbox",
                 "setTextboxPosition",
                 "setTextboxFontSize",
@@ -1396,7 +1594,9 @@ const whiteboard = {
                 "recSelect",
                 "eraseRec",
                 "addTextBox",
+                "addAudio",
                 "setTextboxText",
+                "setAudioboxAudio",
                 "removeTextbox",
                 "setTextboxPosition",
                 "setTextboxFontSize",
@@ -1404,6 +1604,7 @@ const whiteboard = {
             ].includes(tool)
         ) {
             _this.drawBuffer.push(content);
+            console.log(_this.drawBuffer)
         }
     },
     refreshCursorAppearance() {

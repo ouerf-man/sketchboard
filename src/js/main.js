@@ -56,11 +56,11 @@ function main() {
                 displayInfo: false,
                 setReadOnly: false
             },
-            performance:{
-                pointerEventsThrottling:[{fromUserCount: 0, minDistDelta: 1, maxFreq: 30},{fromUserCount: 10, minDistDelta: 5, maxFreq: 10}],
-                refreshInfoFreq:5
+            performance: {
+                pointerEventsThrottling: [{ fromUserCount: 0, minDistDelta: 1, maxFreq: 30 }, { fromUserCount: 10, minDistDelta: 5, maxFreq: 10 }],
+                refreshInfoFreq: 5
             },
-            showSmallestScreenIndicator:true
+            showSmallestScreenIndicator: true
         },
         whiteboardSpecific: {
             correspondingReadOnlyWid: "f8c842fb-f1fd-4d93-bd81-03530f76c22e",
@@ -937,5 +937,12 @@ function initWhiteboard() {
         }
     });
 }
+
+
+$("#fonts").on('change', (event) => {
+    whiteboard.setGlobalFont(event.target.value)
+})
+//$('.recording-modal').click(function(){$(this).hide()})
+
 
 export default main;
