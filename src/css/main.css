@@ -14,12 +14,12 @@ body {
 
 #whiteboardContainer {
     height: calc(var(--vh, 1vh) * 100);
-    width: 80%;
+    width: 96%;
     position: absolute;
     right: 0!important;
 }
 
-.btn-group button {
+#toolbar-inner button {
     background: transparent;
     border: 1px solid #fac26e;
     /* Green border */
@@ -31,7 +31,7 @@ body {
     /* Float the buttons side by side */
     font-size: 1.2em;
     height: 35px;
-    width: 40px;
+    width: 100%;
 }
 
 button::-moz-focus-inner {
@@ -66,7 +66,7 @@ button::-moz-focus-inner {
 
 /* Add a background color on hover */
 
-.btn-group button:hover {
+#toolbar-inner button:hover {
     background-color: #9a9a9a;
 }
 
@@ -74,18 +74,8 @@ button {
     outline-width: 0;
 }
 
-.btn-group {
-    /*background-color: #808080ab;*/
-    margin-bottom: 25px;
-    margin-left: 5px;
-    margin-right: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 100%;
-}
-
 .whiteboard-tool.active:not(:disabled) {
-    background: var(--selected-icon-bg-color);
+    background: var(--selected-icon-bg-color)!important;
 }
 
 #whiteboardThicknessSlider {
@@ -123,7 +113,7 @@ button {
 }
 
 #displayWhiteboardInfoBtn.active {
-    background: var(--selected-icon-bg-color);
+    background: var(--selected-icon-bg-color)!important;
 }
 
 #whiteboardInfoContainer {
@@ -177,10 +167,47 @@ button {
     opacity: .95;
 }
 
+#toolbar{
+    position: absolute;
+    width: 4%;
+    background-color: #faa523;
+    height: 100vh;
+}
+
+#toolbar-inner{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    overflow: scroll;
+}
+
+#toolbar-inner::-webkit-scrollbar{
+    display: none;
+}
+
+#parameters{
+    position: absolute;
+    width: 20%;
+    left: 4%;
+    background-color:  #f3b04c;
+    display: flex;
+    flex-direction: column;
+    padding-top: 40px;
+    padding-left:5px ;
+    padding-bottom: 60px;
+    display: none;
+}
+
+#parameters div:first-child{
+    height: 90px;
+}
+
 select#fonts {
     border: 0;
     font: 32px Cursive;
     background-color: inherit;
+    display: none;
   }
 
 audio { width: 150px;height: 30px; }

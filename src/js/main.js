@@ -326,6 +326,17 @@ function initWhiteboard() {
                 } else {
                     $(".activeToolIcon").html($(this).html()); //Set Active icon the same as the button icon
                 }
+                if(['pen','text','line','rect','circle','eraser'].indexOf(activeTool) == -1){
+                    $('#parameters').slideUp();
+                }else{
+                    $('#parameters').slideDown();
+                }
+
+                if(activeTool === 'text'){
+                    $('#fonts').show()
+                }else{
+                    $('#fonts').hide()
+                }
             });
 
         // upload image button
