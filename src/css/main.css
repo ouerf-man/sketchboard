@@ -14,15 +14,12 @@ body {
 
 #whiteboardContainer {
     height: calc(var(--vh, 1vh) * 100);
-    width: 96%;
+    width: calc(100% - 20px);
     position: absolute;
-    right: 0!important;
+    right: 0 !important;
 }
 
 #toolbar-inner button {
-    background: transparent;
-    border: 1px solid #fac26e;
-    /* Green border */
     color: black;
     /* White text */
     /* Some padding */
@@ -30,7 +27,7 @@ body {
     /* Pointer/hand icon */
     /* Float the buttons side by side */
     font-size: 1.2em;
-    height: 35px;
+    height: 40px;
     width: 100%;
 }
 
@@ -75,7 +72,7 @@ button {
 }
 
 .whiteboard-tool.active:not(:disabled) {
-    background: var(--selected-icon-bg-color)!important;
+    background: var(--selected-icon-bg-color) !important;
 }
 
 #whiteboardThicknessSlider {
@@ -113,7 +110,7 @@ button {
 }
 
 #displayWhiteboardInfoBtn.active {
-    background: var(--selected-icon-bg-color)!important;
+    background: var(--selected-icon-bg-color) !important;
 }
 
 #whiteboardInfoContainer {
@@ -156,25 +153,55 @@ button {
     margin: 5px;
 }
 
-#leftToolbar{
+
+
+.tool-box {
+    border-right: 1px solid #E5E5E5;
     position: absolute;
-    width: 20%;
-    left: 0;
     top: 0;
-    height: 100vh;
-    background-color: #faa523;
-    padding-top: 30px;
-    opacity: .95;
+    width: 40px;
+    background-color: #FBFBFB;
+    overflow: hidden;
+    height: 100%;
+    overflow: hidden;
+    overflow-y: auto;
 }
 
-#toolbar{
-    position: absolute;
-    width: 4%;
-    background-color: #faa523;
-    height: 100vh;
+.tool-box::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background-color:transparent;
 }
 
-#toolbar-inner{
+.tool-box::-webkit-scrollbar-button {
+    height: 0;
+    width: 0
+}
+
+.tool-box::-webkit-scrollbar-thumb {
+    background-color:transparent;
+    border: 0;
+}
+
+
+.tool-box::-webkit-scrollbar-track {
+    background-color:transparent;
+    box-shadow: none;
+}
+
+#toolbar-inner button {
+    border: 0px;
+    border-bottom: 1px solid #E5E5E5!important;
+    background-color: #ffffff;
+    border-radius: 2px;
+    margin-top: -4px;
+}
+#toolbar-inner button:hover {
+    box-shadow: none;
+    background: #eeeeee;
+}
+
+#toolbar-inner {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -182,24 +209,24 @@ button {
     overflow: scroll;
 }
 
-#toolbar-inner::-webkit-scrollbar{
+#toolbar-inner::-webkit-scrollbar {
     display: none;
 }
 
-#parameters{
+#parameters {
     position: absolute;
     width: 20%;
     left: 4%;
-    background-color:  #f3b04c;
     display: flex;
+    background-color: #fff;
     flex-direction: column;
     padding-top: 40px;
-    padding-left:5px ;
+    padding-left: 5px;
     padding-bottom: 60px;
     display: none;
 }
 
-#parameters div:first-child{
+#parameters div:first-child {
     height: 90px;
 }
 
@@ -208,18 +235,21 @@ select#fonts {
     font: 32px Cursive;
     background-color: inherit;
     display: none;
-  }
+}
 
-audio { width: 150px;height: 30px; }
+audio {
+    width: 150px;
+    height: 30px;
+}
 
-.recording-modal{
+.recording-modal {
     width: 100%;
     height: 100%;
-    position: fixed;    
+    position: fixed;
     display: none;
 }
 
-.recording-modal-body{
+.recording-modal-body {
     width: 250px;
     height: 150px;
     position: relative;
@@ -233,35 +263,35 @@ audio { width: 150px;height: 30px; }
 }
 
 .record-button {
-	width: 35px;
-	height: 35px;
-	font-size: 0;
-	background-color: rgb(247, 31, 31);
-	border: 0;
-	border-radius: 35px;
-	margin: 18px;
-	outline: none;
+    width: 35px;
+    height: 35px;
+    font-size: 0;
+    background-color: rgb(247, 31, 31);
+    border: 0;
+    border-radius: 35px;
+    margin: 18px;
+    outline: none;
 }
 
-.notRec{
-	background-color: darkred;
+.notRec {
+    background-color: darkred;
 }
 
-.Rec{
-	animation-name: pulse;
-	animation-duration: 1.5s;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
+.Rec {
+    animation-name: pulse;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
-@keyframes pulse{
-	0%{
-		box-shadow: 0px 0px 5px 0px rgba(173,0,0,.3);
-	}
-	65%{
-		box-shadow: 0px 0px 5px 13px rgba(173,0,0,.3);
-	}
-	90%{
-		box-shadow: 0px 0px 5px 13px rgba(173,0,0,0);
-	}
+@keyframes pulse {
+    0% {
+        box-shadow: 0px 0px 5px 0px rgba(173, 0, 0, 0.3);
+    }
+    65% {
+        box-shadow: 0px 0px 5px 13px rgba(173, 0, 0, 0.3);
+    }
+    90% {
+        box-shadow: 0px 0px 5px 13px rgba(173, 0, 0, 0);
+    }
 }
