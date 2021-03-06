@@ -1,164 +1,304 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>Whiteboard</title>
+        <meta charset="utf-8" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nerko+One&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        />
+    </head>
 
-<head>
-    <title>Whiteboard</title>
-    <meta charset="utf-8" />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nerko+One&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-</head>
+    <body>
+        <!---Whiteboard container -!-->
+        <div id="whiteboardContainer"></div>
+        <div id="toolbar" class="tool-box">
+            <div id="toolbar-inner">
+                <button
+                    id="whiteboardLockBtn"
+                    title="View and Write"
+                    type="button"
+                    tool-icon-data="lock"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    id="whiteboardUnlockBtn"
+                    title="View Only"
+                    type="button"
+                    tool-icon-data="unlock"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
 
-<body>
-    <!---Whiteboard container -!-->
-    <div id="whiteboardContainer"></div>
-    <div id='toolbar'>
-        <div id="toolbar-inner">
-            <button id="whiteboardLockBtn" style="background-color: orange;" title="View and Write" type="button">
-                <i class="fa fa-lock"></i>
-            </button>
-            <button id="whiteboardUnlockBtn" title="View Only" type="button">
-                <i class="fa fa-lock-open"></i>
-            </button>
-    
-            <button id="whiteboardTrashBtn" title="Clear the whiteboard" type="button">
-                <i class="fa fa-trash"></i>
-            </button>
-            <button style="position: absolute; left: 0px; top: 0px; width: 46px; display: none;"
-                id="whiteboardTrashBtnConfirm" title="Confirm clear..." type="button">
-                <i class="fa fa-check"></i>
-            </button>
-            <button id="whiteboardUndoBtn" title="Undo your last step" type="button">
-                <i class="fa fa-undo"></i>
-            </button>
-            <button id="whiteboardRedoBtn" title="Redo your last undo" type="button">
-                <i class="fa fa-redo"></i>
-            </button>
-    
-            <button tool="mouse" title="Take the mouse" type="button" class="whiteboard-tool">
-                <i class="fa fa-mouse-pointer"></i>
-            </button>
-            <button style="padding-bottom: 11px;" tool="recSelect" title="Select an area" type="button"
-                class="whiteboard-tool">
-                <img src="./images/dottedRec.png" />
-            </button>
-            <button tool="pen" title="Take the pen" type="button" class="whiteboard-tool active">
-                <i class="fa fa-pencil-alt"></i>
-            </button>
-            <button style="padding-bottom: 8px; padding-top: 6px;" tool="line" title="draw a line" type="button"
-                class="whiteboard-tool">
-                ╱
-            </button>
-            <button tool="rect" title="draw a rectangle" type="button" class="whiteboard-tool">
-                <i class="far fa-square"></i>
-            </button>
-            <button tool="circle" title="draw a circle" type="button" class="whiteboard-tool">
-                <i class="far fa-circle"></i>
-            </button>
-            <button tool="text" title="write text" type="button" class="whiteboard-tool">
-                <i class="fas fa-font"></i>
-            </button>
-            <button tool="eraser" title="take the eraser" type="button" class="whiteboard-tool">
-                <i class="fa fa-eraser"></i>
-            </button>
+                <button
+                    id="whiteboardTrashBtn"
+                    title="Clear the whiteboard"
+                    type="button"
+                    tool-icon-data="trash"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    style="position: absolute; left: 0px; top: 0px; width: 46px; display: none;"
+                    id="whiteboardTrashBtnConfirm"
+                    title="Confirm clear..."
+                    type="button"
+                >
+                    <i class="fa fa-check"></i>
+                </button>
+                <button
+                    id="whiteboardUndoBtn"
+                    title="Undo your last step"
+                    type="button"
+                    tool-icon-data="undo"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    id="whiteboardRedoBtn"
+                    title="Redo your last undo"
+                    type="button"
+                    tool-icon-data="redo"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
 
-            <button id="addVoiceToCanvas" tool="audio" class="whiteboard-tool"  title="record voice to whiteboard" type="button">
-                <i class="fa fa-microphone"></i>
-                <i style="
-                        position: absolute;
-                        top: 3px;
-                        left: 2px;
-                        color: #000000;
-                        font-size: 0.5em;
-                    " class="fas fa-upload"></i>
-            </button>
+                <button
+                    tool="mouse"
+                    tool-icon-data="mouse"
+                    title="Take the mouse"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    style="padding-bottom: 11px;"
+                    tool="recSelect"
+                    tool-icon-data="recSelect"
+                    title="Select an area"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    tool="pen"
+                    tool-icon-data="pen"
+                    title="Take the pen"
+                    type="button"
+                    class="whiteboard-tool active"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    style="padding-bottom: 8px; padding-top: 6px;"
+                    tool="line"
+                    tool-icon-data="line"
+                    title="draw a line"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    tool="rect"
+                    tool-icon-data="rect"
+                    title="draw a rectangle"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    tool="circle"
+                    tool-icon-data="circle"
+                    title="draw a circle"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    tool="text"
+                    tool-icon-data="text"
+                    title="write text"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
+                <button
+                    tool="eraser"
+                    tool-icon-data="eraser"
+                    title="take the eraser"
+                    type="button"
+                    class="whiteboard-tool"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                </button>
 
-            <button id="addImgToCanvasBtn" title="Upload Image to whiteboard" type="button">
-                <i class="fas fa-image"></i>
-                <i style="
+                <button
+                    id="addVoiceToCanvas"
+                    tool="audio"
+                    tool-icon-data="audio"
+                    class="whiteboard-tool"
+                    title="record voice to whiteboard"
+                    type="button"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                    <i
+                        style="
                             position: absolute;
                             top: 3px;
                             left: 2px;
                             color: #000000;
                             font-size: 0.5em;
-                        " class="fas fa-upload"></i>
-            </button>
+                        "
+                        class="fas fa-upload"
+                    ></i>
+                </button>
 
-            <button style="position: relative;" id="uploadJsonBtn" title="Load saved JSON to whiteboard" type="button">
-                <i class="far fa-file-alt"></i>
-                <i style="
+                <button
+                    id="addImgToCanvasBtn"
+                    title="Upload Image to whiteboard"
+                    type="button"
+                    tool="image"
+                    tool-icon-data="image"
+                >
+                    <img src="" width="90%" class="tool-image" />
+                    <i
+                        style="
                             position: absolute;
                             top: 3px;
                             left: 2px;
                             color: #000000;
                             font-size: 0.5em;
-                        " class="fas fa-upload"></i>
-            </button>
+                            z-index: 9999;
+                        "
+                        class="fas fa-upload"
+                    ></i>
+                </button>
 
-            <input style="display: none;" id="myFile" type="file" />
-
-            <button id="saveAsImageBtn" title="Save whiteboard as image" type="button">
-                <i class="fas fa-image"></i>
-                <i style="
+                <button
+                    style="position: relative;"
+                    id="uploadJsonBtn"
+                    title="Load saved JSON to whiteboard"
+                    type="button"
+                >
+                    <i class="far fa-file-alt"></i>
+                    <i
+                        style="
                             position: absolute;
                             top: 3px;
                             left: 2px;
                             color: #000000;
                             font-size: 0.5em;
-                        " class="fas fa-save"></i>
-            </button>
-            <button style="position: relative; display: none;" id="uploadWebDavBtn" title="Save whiteboard to webdav"
-                type="button">
-                <i class="fas fa-globe"></i>
-                <i style="
-                            position: absolute;
-                            top: 3px;
-                            left: 2px;
-                            color: #000000;
-                            font-size: 0.5em;
-                        " class="fas fa-save"></i>
-            </button>
-            <button style="position: relative;" id="saveAsJSONBtn" title="Save whiteboard as JSON" type="button">
-                <i class="far fa-file-alt"></i>
-                <i style="
-                            position: absolute;
-                            top: 3px;
-                            left: 2px;
-                            color: #000000;
-                            font-size: 0.5em;
-                        " class="fas fa-save"></i>
-            </button>
+                        "
+                        class="fas fa-upload"
+                    ></i>
+                </button>
 
-            <button id="shareWhiteboardBtn" title="share whiteboard" type="button">
-                <i class="fas fa-share-square"></i>
-            </button>
-            
-            <!--
+                <input style="display: none;" id="myFile" type="file" />
+
+                <button id="saveAsImageBtn" title="Save whiteboard as image" type="button" tool-icon-data="saveImage">
+                    <img src="" width="90%" class="tool-image" />
+                    <i
+                        style="
+                            position: absolute;
+                            top: 3px;
+                            left: 2px;
+                            color: #000000;
+                            font-size: 0.5em;
+                        "
+                        class="fas fa-save"
+                    ></i>
+                </button>
+                <button
+                    style="position: relative; display: none;"
+                    id="uploadWebDavBtn"
+                    title="Save whiteboard to webdav"
+                    type="button"
+                >
+                    <i class="fas fa-globe"></i>
+                    <i
+                        style="
+                            position: absolute;
+                            top: 3px;
+                            left: 2px;
+                            color: #000000;
+                            font-size: 0.5em;
+                        "
+                        class="fas fa-save"
+                    ></i>
+                </button>
+                <button
+                    style="position: relative;"
+                    id="saveAsJSONBtn"
+                    title="Save whiteboard as JSON"
+                    type="button"
+                >
+                    <i class="far fa-file-alt"></i>
+                    <i
+                        style="
+                            position: absolute;
+                            top: 3px;
+                            left: 2px;
+                            color: #000000;
+                            font-size: 0.5em;
+                        "
+                        class="fas fa-save"
+                    ></i>
+                </button>
+
+                <button id="shareWhiteboardBtn" title="share whiteboard" type="button">
+                    <i class="fas fa-share-square"></i>
+                </button>
+
+                <!--
                 <button id="displayWhiteboardInfoBtn" title="Show whiteboard info" type="button">
                     <i class="fas fa-info-circle"></i>
                 </button>
-            -->
-                
+            --></div>
         </div>
-    </div>
-    <div id="parameters">
-        <div>
-            <div style="width: 190px; cursor: default; position: relative;">
-                <div class="activeToolIcon" style="position: absolute; top: 2px; left: 2px; font-size: 0.6em;">
-                    <i class="fa fa-pencil-alt"></i>
-                </div>
-                <img style="
+        <div id="parameters">
+            <div>
+                <div style="width: 190px; cursor: default; position: relative;">
+                    <div
+                        class="activeToolIcon"
+                        style="position: absolute; top: 80px; left: 2px; font-size: 0.6em; width: 30px;"
+                    >
+                        <i class="fa fa-pencil-alt"></i>
+                    </div>
+                    <img
+                        style="
                             position: absolute;
                             left: 11px;
                             top: 16px;
                             height: 14px;
                             width: 130px;
-                        " src="./images/slider-background.svg" />
-                <input title="Thickness" id="whiteboardThicknessSlider"
-                    style="position: absolute; left: 9px; width: 130px; top: 15px;" type="range" min="1" max="50"
-                    value="3" />
-                <div id="whiteboardColorpicker" style="
+                        "
+                        src="./images/slider-background.svg"
+                    />
+                    <input
+                        title="Thickness"
+                        id="whiteboardThicknessSlider"
+                        style="position: absolute; left: 9px; width: 130px; top: 15px;"
+                        type="range"
+                        min="1"
+                        max="50"
+                        value="3"
+                    />
+                    <div
+                        id="whiteboardColorpicker"
+                        style="
                             position: absolute;
                             left: 155px;
                             top: 10px;
@@ -166,21 +306,22 @@
                             height: 23px;
                             border-radius: 3px;
                             border: 1px solid darkgrey;
-                        " data-color="#000000"></div>
+                        "
+                        data-color="#000000"
+                    ></div>
+                </div>
             </div>
-        </div>
 
-        
-        <select id="fonts">
-            <option selected disabled>Choose font</option>
-            <option value="Arial">Arial</option>
-            <option value="Verdana">Verdana</option>
-            <option value="Helvetica">Helvetica</option>
-            <option value="Tahoma">Tahoma</option>
-            <option value="'Nerko One', cursive">Nerko One</option>
-        </select>
-    </div>
-    <!--
+            <select id="fonts">
+                <option selected disabled>Choose font</option>
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Tahoma">Tahoma</option>
+                <option value="'Nerko One', cursive">Nerko One</option>
+            </select>
+        </div>
+        <!--
     <div id="leftToolbar">
         <div class="btn-group">
             <button id="whiteboardLockBtn" style="background-color: orange;" title="View and Write" type="button">
@@ -244,13 +385,13 @@
         </div>
     </div>
 -->
-    <!---Toolbar -!-->
-    <!--
+        <!---Toolbar -!-->
+        <!--
         <div id="toolbar" style="position: absolute; top: 10px; left: 10px;">
         
         </div>
     -->
-    <!--
+        <!--
         <div id="whiteboardInfoContainer">
             <p><b>Whiteboard information:</b></p>
             <p># connected users: <i id="connectedUsersCount">0</i></p>
@@ -259,27 +400,35 @@
             <p># msg. received from server: <i id="messageReceivedCount">0</i></p>
         </div>
 -->
-    <div id="shareWhiteboardDialog" class="displayNone">
-        <div class="shareWhiteboardDialogContent">
-            <button class="shareWhiteboardDialogItem" id="shareWhiteboardDialogCopyReadOnlyLink">
-                <i class="fa fa-lock"></i>&nbsp;Share read-only link
-            </button>
-            <button class="shareWhiteboardDialogItem displayNone" id="shareWhiteboardDialogCopyReadWriteLink">
-                <i class="fa fa-lock-open"></i>&nbsp;Share read/write link
-            </button>
-            <button class="shareWhiteboardDialogItem" id="shareWhiteboardDialogGoBack">
-                <b>Go back to the whiteboard</b>
-            </button>
-            <p class="shareWhiteboardDialogItem displayNone" id="shareWhiteboardDialogMessage"></p>
+        <div id="shareWhiteboardDialog" class="displayNone">
+            <div class="shareWhiteboardDialogContent">
+                <button
+                    class="shareWhiteboardDialogItem"
+                    id="shareWhiteboardDialogCopyReadOnlyLink"
+                >
+                    <i class="fa fa-lock"></i>&nbsp;Share read-only link
+                </button>
+                <button
+                    class="shareWhiteboardDialogItem displayNone"
+                    id="shareWhiteboardDialogCopyReadWriteLink"
+                >
+                    <i class="fa fa-lock-open"></i>&nbsp;Share read/write link
+                </button>
+                <button class="shareWhiteboardDialogItem" id="shareWhiteboardDialogGoBack">
+                    <b>Go back to the whiteboard</b>
+                </button>
+                <p
+                    class="shareWhiteboardDialogItem displayNone"
+                    id="shareWhiteboardDialogMessage"
+                ></p>
+            </div>
         </div>
-    </div>
 
-    <div class="recording-modal">
-        <div class="recording-modal-body">
-            <h2>Click to start recording</h2>
-            <button id="recButton" class="record-button notRec"></button>
+        <div class="recording-modal">
+            <div class="recording-modal-body">
+                <h2>Click to start recording</h2>
+                <button id="recButton" class="record-button notRec"></button>
+            </div>
         </div>
-    </div>
-<script src="main-35c4076bda9c860aec19.js"></script></body>
-
+    <script src="main-33c3d2527b45247d4dce.js"></script></body>
 </html>
